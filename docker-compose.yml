@@ -1,49 +1,61 @@
-nginx:
-    build: ./containers/nginx/
-    ports:
-        - 80:80
-    links:
-        - php
-    volumes_from:
-        - app-data
+version: '2'
+services:
+    nginx:
+        build:
+            context: .
+            dockerfile: ./containers/nginx/Dockerfile
+        ports:
+            - 80:80
+        links:
+            - php
+        volumes_from:
+            - app-data
 
-php:
-    build: ./containers/php/
-    expose:
-        - 9000
-    links:
-        - mysql
-    volumes_from:
-        - app-data
+    php:
+        build:
+            context: .
+            dockerfile: ./containers/php/Dockerfile
+        expose:
+            - 9000
+        links:
+            - mysql
+        volumes_from:
+            - app-data
 
-app-data:
-    image: php:7.0-fpm
-    volumes:
-        - ./src:/var/www/html
-    command: "true"
+    app-data:
+        build:
+            context: .
+            dockerfile: ./containers/php/Dockerfile
+        volumes:
+            - ./src:/var/www/html
+        command: "true"
 
-mysql:
-    build: ./containers/mysql/
-    volumes_from:
-        - mysql-data
-    environment:
-        MYSQL_ROOT_PASSWORD: secret
-        MYSQL_DATABASE: project
-        MYSQL_USER: project
-        MYSQL_PASSWORD: project
+    mysql:
+        build:
+            context: .
+            dockerfile: ./containers/mysql/Dockerfile
+        volumes_from:
+            - mysql-data
+        environment:
+            MYSQL_ROOT_PASSWORD: secret
+            MYSQL_DATABASE: project
+            MYSQL_USER: project
+            MYSQL_PASSWORD: project
 
-mysql-data:
-    image: mysql:latest
-    volumes:
-        - /var/lib/mysql
-    command: "true"
+    mysql-data:
+        build:
+            context: .
+            dockerfile: ./containers/mysql/Dockerfile
+        volumes:
+            - /var/lib/mysql
+        command: "true"
 
-phpmyadmin:
-    image: phpmyadmin/phpmyadmin
-    ports:
-        - 8085:80
-    links:
-        - mysql
-    environment:
-        PMA_HOST: mysql
+    phpmyadmin:
+        image: phpmyadmin/phpmyadmin
+        ports:
+            - 8085:80
+        links:
+            - mysql
+        environment:
+            PMA_HOST: mysql
 
